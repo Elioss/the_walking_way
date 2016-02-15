@@ -32,12 +32,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_UTILISATEUR = "utilisateur";
 
     //nom des colonnes de la table waypoint
-    private static final String KEY_WAYPOINT = "waypoint";
+    private static final String KEY_NOM = "nom";
+    private static final String KEY_COMMENTAIRE = "commantaire";
+    private static final String KEY_TYPE = "type";
+
 
     /////////////////
     // GETTERS
     /////////////////
 
+    public static String getKeyType() {
+        return KEY_TYPE;
+    }
 
     public static String getTablePosition() {
         return TABLE_POSITION;
@@ -45,6 +51,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static String getTableWaypoint() {
         return TABLE_WAYPOINT;
+    }
+
+    public static String getKeyCommentaire() {
+        return KEY_COMMENTAIRE;
     }
 
     public static String getKeyId() {
@@ -63,8 +73,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return KEY_UTILISATEUR;
     }
 
-    public static String getKeyWaypoint() {
-        return KEY_WAYPOINT;
+    public static String getKeyNom() {
+        return KEY_NOM;
     }
 
     //////////////////////////////////////////////////////////
@@ -74,18 +84,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Création de la table position
     private static final String CREATE_TABLE_POSITION =
             "CREATE TABLE " + TABLE_POSITION + "("
-            + KEY_ID + "REAL,"
-            + KEY_UTILISATEUR + "TEXT,"
-            + KEY_LONGITUDE + "REAL"
-            + KEY_LATITUDE + "REAL" + ")";
+            + KEY_ID + " REAL,"
+            + KEY_UTILISATEUR + " TEXT,"
+            + KEY_LONGITUDE + " REAL,"
+            + KEY_LATITUDE + " REAL" + ")";
+
+    //Création de la table waypoint
+    private static final String CREATE_TABLE_WAYPOINT =
+            "CREATE TABLE " + TABLE_WAYPOINT + "("
+            + KEY_ID + " REAL,"
+            + KEY_NOM + " TEXT,"
+            + KEY_TYPE + " TEXT,"
+            + KEY_COMMENTAIRE + " TEXT,"
+            + KEY_LONGITUDE + " REAL,"
+            + KEY_LATITUDE + " REAL" + ")";
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        Log.i("SQLite DB", "Constructeur");
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.execSQL(CREATE_TABLE_POSITION);
+        db.execSQL(CREATE_TABLE_WAYPOINT);
+        Log.i("SQLite DB", "Creation des tables effectuée");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WAYPOINT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSITION);
 
+        this.onCreate(db);
+        Log.i("SQLite DB", "Upgrade");
     }
 }
