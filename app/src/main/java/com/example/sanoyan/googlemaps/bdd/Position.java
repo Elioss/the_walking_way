@@ -63,4 +63,8 @@ public class Position {
         this.longitude = longitude;
         this.latitude = latitude;
     }
+
+    public Position() {
+
+    }
 }

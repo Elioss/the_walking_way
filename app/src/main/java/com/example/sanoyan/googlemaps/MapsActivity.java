@@ -29,25 +29,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.content.ContextWrapper;
 import android.util.Log;
-<<<<<<< HEAD
-=======
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
->>>>>>> origin/Sanoyan
 
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int REQUEST_CODE = 1;
-<<<<<<< HEAD
-=======
+
     private LocationManager locationManager;
     private LocationListener locationListener;
     private TextView textView;
->>>>>>> origin/Sanoyan
+
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -67,26 +64,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onMapReady(GoogleMap map) {
-<<<<<<< HEAD
 
-        mMap = map;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
-        }
-        map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                LatLng loc = new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-                return true;
-            }
-        });
-
-=======
 
         mMap = map;
 
@@ -161,17 +139,13 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
 
->>>>>>> origin/Sanoyan
 
     }
 
     @Override
-<<<<<<< HEAD
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-=======
+
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
->>>>>>> origin/Sanoyan
+
         switch (requestCode) {
             case REQUEST_CODE: {
                 if (grantResults.length > 0

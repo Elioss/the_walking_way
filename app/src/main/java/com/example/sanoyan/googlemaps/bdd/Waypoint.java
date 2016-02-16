@@ -6,6 +6,7 @@ package com.example.sanoyan.googlemaps.bdd;
 public class Waypoint {
 
     private int id;
+    private String utilisateur;
     private String nom;
     private String type;
     private String commentaire;
@@ -13,6 +14,11 @@ public class Waypoint {
     private int latitude;
 
     //setters
+
+    public void setUtilisateur(String utilisateur) {
+        this.utilisateur = utilisateur;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -40,6 +46,11 @@ public class Waypoint {
 
     //getters
 
+
+    public String getUtilisateur() {
+        return utilisateur;
+    }
+
     public int getId() {
         return id;
     }
@@ -66,12 +77,13 @@ public class Waypoint {
 
     @Override
     public String toString() {
-        return ("Nom: " + nom + ", type: " + type +  ", commentaire: " + commentaire
+        return ("Utilisateur: " + utilisateur + "nom du waypoint: " + nom + ", type: " + type +  ", commentaire: " + commentaire
                 + ", longeur: " + longueur +  ", latitude: " + latitude );
     }
 
-    public Waypoint(int id, String nom, String type, String commentaire, int longueur, int latitude) {
+    public Waypoint(int id, String utilisateur, String nom, String type, String commentaire, int longueur, int latitude) {
         this.id = id;
+        this.utilisateur = utilisateur;
         this.nom = nom;
         this.type = type;
         this.commentaire = commentaire;
