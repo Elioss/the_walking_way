@@ -6,8 +6,9 @@ package com.example.sanoyan.googlemaps.bdd;
 public class Position {
     private int id;
     private String utilisateur;
-    private int longitude;
-    private int latitude;
+    private double latitude;
+    private double longitude;
+
 
     //setters
 
@@ -37,28 +38,33 @@ public class Position {
         return utilisateur;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
     @Override
     public String toString() {
-        return ("Utilisateur: " + utilisateur + ", longitude: " + longitude
-                +  ", latitude: " + latitude);
+        return ("Utilisateur: " + utilisateur + ", latitude: " + latitude
+                +  ", longitude: " + longitude);
     }
 
-    public Position(int id, String utilisateur, int longitude, int latitude) {
+    public Position(int id, String utilisateur, double latitude, double longitude) {
         this.id = id;
         this.utilisateur = utilisateur;
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
-    public Position(String utilisateur, int longitude, int latitude) {
+    public Position(double latitude, double longitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public Position(String utilisateur, double latitude, double longitude) {
         this.utilisateur = utilisateur;
         this.longitude = longitude;
         this.latitude = latitude;

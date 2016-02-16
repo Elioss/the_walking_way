@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -17,6 +18,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.location.LocationListener;
 //import com.google.android.gms.location.LocationListener;
+import com.example.sanoyan.googlemaps.bdd.DBAdapter;
+import com.example.sanoyan.googlemaps.bdd.Position;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -26,6 +29,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import android.content.ContextWrapper;
 import android.util.Log;
@@ -33,6 +38,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements
@@ -44,6 +51,9 @@ public class MapsActivity extends FragmentActivity implements
     private LocationManager locationManager;
     private LocationListener locationListener;
     private TextView textView;
+
+    private DBAdapter db;
+    private ArrayList<Position> listPosition;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -74,10 +84,39 @@ public class MapsActivity extends FragmentActivity implements
             public void onLocationChanged(Location location) {
 
                 // INSERER DANS LA BASE DE DE DONNEES location.getLatitude et location.getLongitude
+                Position nouvellePosition = new Position(location.getLatitude(), location.getLongitude());
+                db = new DBAdapter(getApplicationContext());
+                try {
+                    db.open();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                db.creerUnePosition(nouvellePosition);
+                db.close();
+
+                //ACCES à la bdd
+                try {
+                    db.open();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                listPosition = db.recupererTouteLesPositions();
+                db.close();
+                PolylineOptions polyoption = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+                for(int i=0; i<listPosition.size(); i++){
+                    LatLng latLng = new LatLng(listPosition.get(i).getLatitude(), listPosition.get(i).getLongitude());
+                    mMap.addPolyline(polyoption.add(latLng));
+                }
+
+
+
+                //Je met ta partie en commentaire pour essayer de mettre les marqueurs à partir de la bdd
+                /*
                 textView.append("\n " + location.getLatitude() +
                         " " + location.getLongitude());
                 LatLng myPosition = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
+                */
             }
 
             @Override
