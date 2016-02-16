@@ -1,6 +1,7 @@
 package com.example.sanoyan.googlemaps;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,30 +29,96 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.content.ContextWrapper;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements
-        OnMapReadyCallback{
+        OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int REQUEST_CODE = 1;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private TextView textView;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        Log.d("Tag", "Test");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        textView = (TextView) findViewById(R.id.textView);
+
+
+
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
 
         mMap = map;
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                // INSERER DANS LA BASE DE DE DONNEES location.getLatitude et location.getLongitude
+                textView.append("\n " + location.getLatitude() +
+                        " " + location.getLongitude());
+                LatLng myPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.INTERNET,
+                                Manifest.permission.ACCESS_FINE_LOCATION},
+                        10);
+                return;
+            } else {
+                locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
+            }
+
+        } else{
+            locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
+        }
+
+
+
+        //LatLng sydney = new LatLng(-34, 151);
+        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+        //LatLng barcelona = new LatLng(2.1699, 41.38);
+        //mMap.addMarker(new MarkerOptions().position(barcelona).title("Marker in Barcelone"));
+
+        //LatLng chennai= new LatLng(13.0826744, 80.27066070000001);
+        //mMap.addMarker(new MarkerOptions().position(chennai).title("Marker in Barcelone"));
+
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -72,8 +139,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE: {
                 if (grantResults.length > 0
