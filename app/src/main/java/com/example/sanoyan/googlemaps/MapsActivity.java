@@ -54,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements
 
     private DBAdapter db;
     private ArrayList<Position> listPosition;
+    private Position dernierePosition;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -101,22 +102,26 @@ public class MapsActivity extends FragmentActivity implements
                     e.printStackTrace();
                 }
                 listPosition = db.recupererTouteLesPositions();
+                dernierePosition = db.recupererDernierePosition();
                 db.close();
+                /*
                 PolylineOptions polyoption = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
                 for(int i=0; i<listPosition.size(); i++){
                     LatLng latLng = new LatLng(listPosition.get(i).getLatitude(), listPosition.get(i).getLongitude());
                     mMap.addPolyline(polyoption.add(latLng));
                 }
-
-
-
+*/
+                textView.append("\n " + dernierePosition.getLatitude() +
+                        " " + dernierePosition.getLongitude());
+                LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
+/*
                 //Je met ta partie en commentaire pour essayer de mettre les marqueurs à partir de la bdd
-                /*
                 textView.append("\n " + location.getLatitude() +
                         " " + location.getLongitude());
                 LatLng myPosition = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
-                */
+*/
             }
 
             @Override

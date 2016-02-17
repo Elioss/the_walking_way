@@ -48,8 +48,8 @@ public class DBAdapter {
     private Position cursorSurPosition(Cursor cursor) {
         Position position = new Position();
         position.setUtilisateur(cursor.getString(cursor.getColumnIndex(DatabaseHelper.getKeyUtilisateur())));
-        position.setLatitude(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.getKeyLatitude())));
-        position.setLongitude(cursor.getInt(cursor.getColumnIndex(DatabaseHelper.getKeyLongitude())));
+        position.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLatitude())));
+        position.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLongitude())));
         return position;
     }
 
@@ -65,6 +65,17 @@ public class DBAdapter {
         }
         cursor.close();
         return positions;
+    }
+
+    public Position recupererDernierePosition() {
+        Position position = new Position();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.getTablePosition(), null);
+
+        cursor.moveToLast();
+        position.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLatitude())));
+        position.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLongitude())));
+
+        return position;
     }
 
 }
