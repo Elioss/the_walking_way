@@ -50,7 +50,6 @@ public class MapsActivity extends FragmentActivity implements
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private TextView textView;
 
     private DBAdapter db;
     private ArrayList<Position> listPosition;
@@ -67,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        textView = (TextView) findViewById(R.id.textView);
+
 
 
 
@@ -111,8 +110,7 @@ public class MapsActivity extends FragmentActivity implements
                     mMap.addPolyline(polyoption.add(latLng));
                 }
 */
-                textView.append("\n " + dernierePosition.getLatitude() +
-                        " " + dernierePosition.getLongitude());
+                Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
                 LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
 /*
