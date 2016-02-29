@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -35,6 +36,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import android.content.ContextWrapper;
 import android.util.Log;
 
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +58,9 @@ public class MapsActivity extends FragmentActivity implements
     private ArrayList<Position> listPosition;
     private Position dernierePosition;
 
+    ImageButton dangerButton;
+    private Position dangerPosition;
+
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -66,11 +72,46 @@ public class MapsActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        dangerButton = (ImageButton) findViewById(R.id.dangerButton);
 
+        dangerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
 
+            public void onClick(View view) {
+                try {
+                    db.open();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                dangerPosition = db.recupererDernierePosition();
+                db.close();
 
+                Toast.makeText(getApplicationContext(),"Danger signalé", Toast.LENGTH_SHORT).show();
+                // dangerPosition à ajouter dans la BDD
+                Log.d("Tag", "Danger " + dangerPosition.getLatitude() + " " + dangerPosition.getLongitude());
+                LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dangerPosition.getLongitude());
+                mMap.addMarker(new MarkerOptions()
+                        .position(positionDanger)
+                        .title("Danger")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
+            }
+
+        });
+/*
+        imageButton = (ImageButton) findViewById(R.id.dangerButton);
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Tag", "Clic Ok");
+                imageButton.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(),"You download is resumed",Toast.LENGTH_LONG).show();
+            }
+        });
+        */
     }
+
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -112,7 +153,10 @@ public class MapsActivity extends FragmentActivity implements
 */
                 Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
                 LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
+                mMap.addMarker(new MarkerOptions()
+                        .position(myPosition)
+                        .title("My Position")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 /*
                 //Je met ta partie en commentaire pour essayer de mettre les marqueurs à partir de la bdd
                 textView.append("\n " + location.getLatitude() +
@@ -154,15 +198,6 @@ public class MapsActivity extends FragmentActivity implements
         }
 
 
-
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
-        //LatLng barcelona = new LatLng(2.1699, 41.38);
-        //mMap.addMarker(new MarkerOptions().position(barcelona).title("Marker in Barcelone"));
-
-        //LatLng chennai= new LatLng(13.0826744, 80.27066070000001);
-        //mMap.addMarker(new MarkerOptions().position(chennai).title("Marker in Barcelone"));
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
