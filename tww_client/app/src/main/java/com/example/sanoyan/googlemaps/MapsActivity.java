@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -49,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private PolylineOptions polylineOptions;
     private static final int REQUEST_CODE = 1;
 
     private LocationManager locationManager;
@@ -61,19 +63,18 @@ public class MapsActivity extends FragmentActivity implements
     ImageButton dangerButton;
     private Position dangerPosition;
 
-
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        Log.d("Tag", "Test");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         dangerButton = (ImageButton) findViewById(R.id.dangerButton);
 
+        // CLIC SUR DANGER BOUTON
         dangerButton.setOnClickListener(new View.OnClickListener() {
             @Override
 
@@ -98,18 +99,6 @@ public class MapsActivity extends FragmentActivity implements
             }
 
         });
-/*
-        imageButton = (ImageButton) findViewById(R.id.dangerButton);
-
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Tag", "Clic Ok");
-                imageButton.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(),"You download is resumed",Toast.LENGTH_LONG).show();
-            }
-        });
-        */
     }
 
 
@@ -118,6 +107,9 @@ public class MapsActivity extends FragmentActivity implements
 
 
         mMap = map;
+        final PolylineOptions polylineOptions = new PolylineOptions();
+
+
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -144,26 +136,19 @@ public class MapsActivity extends FragmentActivity implements
                 listPosition = db.recupererTouteLesPositions();
                 dernierePosition = db.recupererDernierePosition();
                 db.close();
-                /*
-                PolylineOptions polyoption = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
-                for(int i=0; i<listPosition.size(); i++){
-                    LatLng latLng = new LatLng(listPosition.get(i).getLatitude(), listPosition.get(i).getLongitude());
-                    mMap.addPolyline(polyoption.add(latLng));
-                }
-*/
+
                 Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
                 LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
                 mMap.addMarker(new MarkerOptions()
                         .position(myPosition)
                         .title("My Position")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-/*
-                //Je met ta partie en commentaire pour essayer de mettre les marqueurs à partir de la bdd
-                textView.append("\n " + location.getLatitude() +
-                        " " + location.getLongitude());
-                LatLng myPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(myPosition).title("My Position"));
-*/
+                polylineOptions.add(myPosition)
+                        .width(5)
+                        .color(Color.BLUE)
+                        .geodesic(true);
+                mMap.addPolyline(polylineOptions);
+
             }
 
             @Override
