@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/home_id"
+            android:title="Accueil"
+            ></item>
+        <item
+            android:id="@+id/messages"
+            android:title="Messages"
+            ></item>
+        <item
+            android:id="@+id/settings"
+            android:title="Paramètres"
+            ></item>
+    </group>
+
+    <item android:title="Géolocalisation">
+        <menu>
+            <item
+            android:title="Afficher les parcours"
+            android:id="@+id/afficher_parcours"
+            >
+
+        </item>
+
+            <item
+                android:title="Afficher les dangers"
+                android:id="@+id/afficher_danger"
+                >
+
+            </item>
+        </menu>
+    </item>
+</menu>
