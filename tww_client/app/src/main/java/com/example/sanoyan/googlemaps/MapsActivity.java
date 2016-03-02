@@ -20,6 +20,7 @@ import android.location.LocationListener;
 //import com.google.android.gms.location.LocationListener;
 import com.example.sanoyan.googlemaps.bdd.DBAdapter;
 import com.example.sanoyan.googlemaps.bdd.Position;
+import com.example.sanoyan.googlemaps.bdd.Waypoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -59,6 +60,8 @@ public class MapsActivity extends FragmentActivity implements
     private DBAdapter db;
     private ArrayList<Position> listPosition;
     private Position dernierePosition;
+    private Waypoint dernierWaypoint;
+    private ArrayList<Waypoint> listWaypoint;
 
     ImageButton dangerButton;
     private Position dangerPosition;
@@ -81,21 +84,52 @@ public class MapsActivity extends FragmentActivity implements
             public void onClick(View view) {
                 try {
                     db.open();
+                    dangerPosition = db.recupererDernierePosition();
+                    db.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                dangerPosition = db.recupererDernierePosition();
-                db.close();
+
 
                 Toast.makeText(getApplicationContext(),"Danger signalé", Toast.LENGTH_SHORT).show();
                 // dangerPosition à ajouter dans la BDD
+                Waypoint waypoint = new Waypoint();
+                waypoint.setUtilisateur(dangerPosition.getUtilisateur());
+                waypoint.setLongitude(dangerPosition.getLongitude());
+                waypoint.setLatitude(dangerPosition.getLatitude());
+                try {
+                    db.open();
+                    db.CreerUnWaypoint(waypoint);
+                    db.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
+                //pour le test de la table bdd waypoint
+                try {
+                    db.open();
+                    dernierWaypoint = db.recupererDernierWaypoint();
+                    db.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("Tag", "Danger " + dernierWaypoint.getLatitude() + " " + dernierWaypoint.getLongitude());
+                LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dernierWaypoint.getLongitude());
+                mMap.addMarker(new MarkerOptions()
+                        .position(positionDanger)
+                        .title("Danger")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+                /*
                 Log.d("Tag", "Danger " + dangerPosition.getLatitude() + " " + dangerPosition.getLongitude());
                 LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dangerPosition.getLongitude());
                 mMap.addMarker(new MarkerOptions()
                         .position(positionDanger)
                         .title("Danger")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-
+                */
             }
 
         });
@@ -121,21 +155,23 @@ public class MapsActivity extends FragmentActivity implements
                 db = new DBAdapter(getApplicationContext());
                 try {
                     db.open();
+                    db.creerUnePosition(nouvellePosition);
+                    db.close();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
-                db.creerUnePosition(nouvellePosition);
-                db.close();
+
 
                 //ACCES à la bdd
                 try {
                     db.open();
+                    listPosition = db.recupererTouteLesPositions();
+                    dernierePosition = db.recupererDernierePosition();
+                    db.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                listPosition = db.recupererTouteLesPositions();
-                dernierePosition = db.recupererDernierePosition();
-                db.close();
+
 
                 Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
                 LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
