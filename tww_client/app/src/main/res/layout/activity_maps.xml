@@ -38,8 +38,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/navigation_view"
         android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_drawer_header"
         app:menu="@menu/drawer_menu"
-
     ></android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
