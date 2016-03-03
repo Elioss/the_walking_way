@@ -139,10 +139,11 @@ public class MapsActivity extends FragmentActivity implements
 
                 Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
                 LatLng myPosition = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
-                mMap.addMarker(new MarkerOptions()
+                /*mMap.addMarker(new MarkerOptions()
                         .position(myPosition)
                         .title("My Position")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        */
                 polylineOptions.add(myPosition)
                         .width(5)
                         .color(Color.BLUE)
