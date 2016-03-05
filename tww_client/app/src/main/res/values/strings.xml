@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">GoogleMaps</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">The Walking Way</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
 </resources>
