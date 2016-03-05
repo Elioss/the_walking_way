@@ -17,8 +17,8 @@ class PositionController {
         
     }
     
-    def create_position(id, latitude, longitude) {
-        def position = new Position(id, latitude, longitude)
+    def create_position(params) {
+        def position = new Position(params)
         render position as JSON
         position.save()
     }    

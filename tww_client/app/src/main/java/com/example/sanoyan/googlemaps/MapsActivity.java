@@ -21,6 +21,7 @@ import android.location.LocationListener;
 import com.example.sanoyan.googlemaps.bdd.DBAdapter;
 import com.example.sanoyan.googlemaps.bdd.Position;
 import com.example.sanoyan.googlemaps.bdd.Waypoint;
+import com.example.sanoyan.googlemaps.request.RetrofitAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -114,6 +115,7 @@ public class MapsActivity extends FragmentActivity implements
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                /*
                 dernierWaypoint = db.recupererDernierWaypoint();
                 db.close();
                 Log.d("Tag", "Danger " + dernierWaypoint.getLatitude() + " " + dernierWaypoint.getLongitude());
@@ -122,15 +124,15 @@ public class MapsActivity extends FragmentActivity implements
                         .position(positionDanger)
                         .title("Danger")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                */
 
-                /*
                 Log.d("Tag", "Danger " + dangerPosition.getLatitude() + " " + dangerPosition.getLongitude());
                 LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dangerPosition.getLongitude());
                 mMap.addMarker(new MarkerOptions()
                         .position(positionDanger)
                         .title("Danger")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                */
+
             }
 
         });
@@ -147,6 +149,9 @@ public class MapsActivity extends FragmentActivity implements
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -171,6 +176,20 @@ public class MapsActivity extends FragmentActivity implements
                     e.printStackTrace();
                 }
                 listPosition = db.recupererTouteLesPositions();
+
+                RetrofitAdapter ra = new RetrofitAdapter();
+                ra.listDesPositions(getApplicationContext());
+
+                for(int i = 0; i < listPosition.size(); i++) {
+                    Log.i("latitude", String.valueOf(listPosition.get(i).getLatitude()));
+                    Log.i("longitude", String.valueOf(listPosition.get(i).getLongitude()));
+                    LatLng latLng = new LatLng(listPosition.get(i).getLatitude(), listPosition.get(i).getLongitude());
+                    mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title("Danger")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                }
+
                 dernierePosition = db.recupererDernierePosition();
                 LatLng latLng = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
                 db.close();
@@ -186,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements
                         .color(Color.BLUE)
                         .geodesic(true);
                 mMap.addPolyline(polylineOptions);
-                CameraPosition cameraPosition = new CameraPosition(latLng, 20, 5, 5);
+                CameraPosition cameraPosition = new CameraPosition(latLng, 5, 5, 5);
                 mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom
                 //        (new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude()), 20));
