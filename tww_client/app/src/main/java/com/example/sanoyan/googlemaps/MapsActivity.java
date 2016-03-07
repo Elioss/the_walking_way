@@ -176,7 +176,7 @@ public class MapsActivity extends FragmentActivity implements
                     e.printStackTrace();
                 }
                 listPosition = db.recupererTouteLesPositions();
-
+/*
                 RetrofitAdapter ra = new RetrofitAdapter();
                 ra.listDesPositions(getApplicationContext());
 
@@ -189,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements
                             .title("Danger")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                 }
-
+*/
                 dernierePosition = db.recupererDernierePosition();
                 LatLng latLng = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
                 db.close();
@@ -205,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements
                         .color(Color.BLUE)
                         .geodesic(true);
                 mMap.addPolyline(polylineOptions);
-                CameraPosition cameraPosition = new CameraPosition(latLng, 5, 5, 5);
+                CameraPosition cameraPosition = new CameraPosition(latLng, 20, 5, 5);
                 mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom
                 //        (new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude()), 20));
