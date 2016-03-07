@@ -78,4 +78,45 @@ public class DBAdapter {
         return position;
     }
 
+
+    public void CreerUnWaypoint(Waypoint waypoint) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.getKeyLongitude(), waypoint.getLongitude());
+        values.put(DatabaseHelper.getKeyLatitude(), waypoint.getLatitude());
+
+        db.insert(DatabaseHelper.getTablePosition(), null, values);
+    }
+
+    private Waypoint cursorSurWaypoint(Cursor cursor) {
+        Waypoint waypoint = new Waypoint();
+        waypoint.setUtilisateur(cursor.getString(cursor.getColumnIndex(DatabaseHelper.getKeyUtilisateur())));
+        waypoint.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLatitude())));
+        waypoint.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLongitude())));
+        return waypoint;
+    }
+
+    public Waypoint recupererDernierWaypoint() {
+        Waypoint waypoint = new Waypoint();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.getTableWaypoint(), null);
+
+        cursor.moveToLast();
+        waypoint.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLatitude())));
+        waypoint.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.getKeyLongitude())));
+
+        return  waypoint;
+    }
+
+    public ArrayList<Waypoint> recupererTouteLesWaypoints() {
+        ArrayList<Waypoint> waypoints = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.getTableWaypoint(), null);
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            Waypoint waypoint = cursorSurWaypoint(cursor);
+            waypoints.add(waypoint);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return waypoints;
+    }
 }
