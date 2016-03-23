@@ -20,6 +20,8 @@ import android.location.LocationListener;
 //import com.google.android.gms.location.LocationListener;
 import com.example.sanoyan.googlemaps.bdd.DBAdapter;
 import com.example.sanoyan.googlemaps.bdd.Position;
+import com.example.sanoyan.googlemaps.bdd.Waypoint;
+import com.example.sanoyan.googlemaps.request.RetrofitAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -59,6 +62,8 @@ public class MapsActivity extends FragmentActivity implements
     private DBAdapter db;
     private ArrayList<Position> listPosition;
     private Position dernierePosition;
+    private Waypoint dernierWaypoint;
+    private ArrayList<Waypoint> listWaypoint;
 
     ImageButton dangerButton;
     private Position dangerPosition;
@@ -79,6 +84,7 @@ public class MapsActivity extends FragmentActivity implements
             @Override
 
             public void onClick(View view) {
+                db = new DBAdapter(getApplicationContext());
                 try {
                     db.open();
                 } catch (SQLException e) {
@@ -89,6 +95,37 @@ public class MapsActivity extends FragmentActivity implements
 
                 Toast.makeText(getApplicationContext(),"Danger signalé", Toast.LENGTH_SHORT).show();
                 // dangerPosition à ajouter dans la BDD
+                Waypoint waypoint = new Waypoint();
+                waypoint.setUtilisateur(dangerPosition.getUtilisateur());
+                waypoint.setLongitude(dangerPosition.getLongitude());
+                waypoint.setLatitude(dangerPosition.getLatitude());
+                try {
+                    db.open();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                db.CreerUnWaypoint(waypoint);
+                db.close();
+
+                //pour le test de la table bdd waypoint
+                try {
+                    db.open();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                /*
+                dernierWaypoint = db.recupererDernierWaypoint();
+                db.close();
+                Log.d("Tag", "Danger " + dernierWaypoint.getLatitude() + " " + dernierWaypoint.getLongitude());
+                LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dernierWaypoint.getLongitude());
+                mMap.addMarker(new MarkerOptions()
+                        .position(positionDanger)
+                        .title("Danger")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                */
+
                 Log.d("Tag", "Danger " + dangerPosition.getLatitude() + " " + dangerPosition.getLongitude());
                 LatLng positionDanger = new LatLng(dangerPosition.getLatitude(), dangerPosition.getLongitude());
                 mMap.addMarker(new MarkerOptions()
@@ -112,6 +149,9 @@ public class MapsActivity extends FragmentActivity implements
 
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -121,6 +161,7 @@ public class MapsActivity extends FragmentActivity implements
                 db = new DBAdapter(getApplicationContext());
                 try {
                     db.open();
+
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -130,11 +171,27 @@ public class MapsActivity extends FragmentActivity implements
                 //ACCES à la bdd
                 try {
                     db.open();
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 listPosition = db.recupererTouteLesPositions();
+
+                RetrofitAdapter ra = new RetrofitAdapter();
+                ra.listDesPositions(getApplicationContext());
+
+                for(int i = 0; i < listPosition.size(); i++) {
+                    Log.i("latitude", String.valueOf(listPosition.get(i).getLatitude()));
+                    Log.i("longitude", String.valueOf(listPosition.get(i).getLongitude()));
+                    LatLng latLng = new LatLng(listPosition.get(i).getLatitude(), listPosition.get(i).getLongitude());
+                    mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title("Danger")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                }
+
                 dernierePosition = db.recupererDernierePosition();
+                LatLng latLng = new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude());
                 db.close();
 
                 Log.d("Tag", location.getLatitude() + " " + location.getLongitude());
@@ -149,7 +206,10 @@ public class MapsActivity extends FragmentActivity implements
                         .color(Color.BLUE)
                         .geodesic(true);
                 mMap.addPolyline(polylineOptions);
-
+                CameraPosition cameraPosition = new CameraPosition(latLng, 5, 5, 5);
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom
+                //        (new LatLng(dernierePosition.getLatitude(), dernierePosition.getLongitude()), 20));
             }
 
             @Override
